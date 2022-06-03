@@ -1,0 +1,8 @@
+project: PROJECT
+target: ProtobufFuzzer
+cmds:
+- cmd: /out/jazzer_driver --agent_path=/out/jazzer_agent_deploy.jar --cp=/out/protobuf-java.jar:/out/test-full.jar::/out --target_class=ProtobufFuzzer --jvm_args="-Xmx2048m"
+  env:
+    LD_LIBRARY_PATH: '"/usr/lib/jvm/java-15-openjdk-amd64/lib/server"'
+  timeout: 50
+  libfuzzer: true
