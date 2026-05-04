@@ -12,14 +12,13 @@ make install
 
 export PROTOC="$SRC/protobuf-install/bin/protoc"
 
-# Build protobuf-java (requires protoc in source tree).
-cd $SRC/protobuf/java/
-cp $PROTOC $SRC/protobuf/src/ 2>/dev/null || true
-MAVEN_ARGS="-Dmaven.test.skip=true -Djavac.src.version=15 -Djavac.target.version=15"
-$MVN package $MAVEN_ARGS
-CURRENT_VERSION=$($MVN org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate \
- -Dexpression=project.version -q -DforceStdout)
-cp "core/target/protobuf-java-$CURRENT_VERSION.jar" $OUT/protobuf-java.jar
+# Get protobuf version from pom.xml
+PROTOBUF_VERSION=$(grep -m1 "<version>" $SRC/protobuf/java/pom.xml | sed "s/.*<version>\(.*\)<\/version>.*/\1/")
+echo "Protobuf version: $PROTOBUF_VERSION"
+
+# Download protobuf-java jar from Maven Central (avoids building pom.xml from templates)
+curl -L -o $OUT/protobuf-java.jar \
+  "https://repo1.maven.org/maven2/com/google/protobuf/protobuf-java/${PROTOBUF_VERSION}/protobuf-java-${PROTOBUF_VERSION}.jar"
 
 # Compile test protos with protoc.
 cd $SRC/
